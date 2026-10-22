@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102a35">
+  <title>I Will Win Alone | سوف أفوز وحدي</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Changa:wght@400;500;600;700;800&display=swap');
+    :root { color-scheme: dark; --ink: #f4f4dc; --muted: #c1d6c8; --mint: #a9e6b1; --gold: #ffd776; --panel: rgba(7, 27, 35, .88); }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 18px; color: var(--ink); background: #07171e; font-family: "Changa", Tahoma, sans-serif; }
+    button { color: inherit; font: inherit; }
+    .shell { width: min(1120px, 100%); }
+    .topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 2px 10px; }
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .brand-mark { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid #79a88d; border-radius: 15px 5px 15px 5px; background: #153c40; color: #d8f2a7; font-size: 22px; box-shadow: 0 0 24px #87c99522; }
+    h1 { margin: 0; font-size: 20px; font-weight: 700; }
+    .subtitle { margin: 1px 0 0; color: #a8c4b5; font-size: 12px; }
+    .stats { display: flex; gap: 8px; direction: rtl; }
+    .stat { min-width: 78px; padding: 5px 12px; border: 1px solid #34535a; border-radius: 12px; background: linear-gradient(145deg, #173640, #10252d); text-align: center; }
+    .stat small { display: block; color: #b6cbbc; font-size: 10px; line-height: 1.3; }
+    .stat strong { color: var(--gold); font-size: 17px; line-height: 1.2; }
+    .stage { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid #5e8d7c; border-radius: 22px; background: #11343e; box-shadow: 0 22px 70px #0009, inset 0 0 0 1px #ffffff0a; isolation: isolate; }
+    canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+    .shade { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; overflow-y: auto; padding: 16px; background: rgba(5, 19, 28, .76); }
+    .shade[hidden] { display: none; }
+    .dialog { width: min(390px, 100%); padding: 24px 24px 20px; text-align: center; border: 1px solid #789d88; border-radius: 20px; background: linear-gradient(145deg, #102d35f2, #071b23f5); box-shadow: 0 18px 60px #0009; animation: rise .38s ease both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+    .dialog .sigil { color: var(--gold); font-size: 28px; line-height: 1; }
+    .dialog h2 { margin: 8px 0 2px; font-size: clamp(23px, 4vw, 32px); }
+    .dialog p { margin: 0 0 17px; color: #c4d8c7; font-size: 14px; }
+    .primary { min-height: 45px; width: 100%; border: 1px solid #d5df9b; border-radius: 13px; background: #c9d889; color: #183338; font-weight: 800; cursor: pointer; transition: background .16s, transform .16s; }
+    .primary:hover { background: #e1e9ad; transform: translateY(-1px); }
+    .hint { margin-top: 13px !important; margin-bottom: 0 !important; color: #a5bfae !important; font-size: 11px !important; }
+    .game-actions { position: absolute; z-index: 1; top: 10px; left: 10px; display: flex; gap: 7px; }
+    .icon-btn { width: 42px; height: 42px; border: 1px solid #aec7af; border-radius: 14px; background: rgba(8, 28, 33, .84); backdrop-filter: blur(8px); cursor: pointer; font-size: 17px; transition: transform .16s, background .16s, border-color .16s; }
+    .icon-btn:hover { background: #31544b; transform: translateY(-2px); }
+    .mic-btn.is-live { border-color: #ff9c79; background: #8e3d39; box-shadow: 0 0 24px #ff886666; }
+    .mic-status { position: absolute; z-index: 1; top: 58px; left: 10px; max-width: min(250px, 55%); padding: 4px 9px; border-radius: 10px; background: #092329bb; color: #dce9d5; font-size: 10px; text-align: left; }
+    .touch-controls { display: none; position: absolute; z-index: 1; right: 12px; bottom: 12px; left: 12px; justify-content: space-between; align-items: end; direction: ltr; pointer-events: none; }
+    .touch-group { display: flex; gap: 9px; }
+    .touch-btn { width: 58px; height: 56px; border: 1px solid #c7dfc4aa; border-radius: 19px 8px 19px 8px; background: #092329cc; box-shadow: 0 4px 18px #0005; font-size: 24px; touch-action: none; user-select: none; pointer-events: auto; }
+    .touch-btn.jump { width: 76px; height: 70px; border-color: #f3d68f; border-radius: 50%; color: #ffe4a3; font-size: 14px; font-weight: 700; }
+    .underbar { display: flex; justify-content: space-between; gap: 12px; padding: 9px 2px 0; color: #a8c2b3; font-size: 11px; }
+    .underbar b { color: #dce6c7; font-weight: 500; }
+    .dialog { width: min(540px, 100%); max-height: min(92vh, 650px); overflow-y: auto; }
+    .menu-title { margin: 0 0 3px !important; color: #fff0bd !important; font-size: 12px !important; }
+    .menu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 14px 0 10px; }
+    .menu-field { display: grid; gap: 4px; text-align: right; color: #c4d8c7; font-size: 11px; }
+    .menu-field input, .menu-field select { width: 100%; min-width: 0; height: 42px; border: 1px solid #5d8076; border-radius: 11px; padding: 0 10px; background: #0b2228; color: #f4f4dc; font: inherit; }
+    .menu-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .menu-action { min-height: 42px; border: 1px solid #78988a; border-radius: 12px; background: #183b3d; color: #eff1d5; cursor: pointer; font-size: 12px; font-weight: 700; transition: transform .14s, background .14s; }
+    .menu-action:hover { transform: translateY(-1px); }
+    .menu-action:hover { background: #28524b; }
+    .menu-action.primary-action { border-color: #d5df9b; background: #c9d889; color: #183338; }
+    .room-status { min-height: 17px; margin: 9px 0 !important; color: #b5d6ad !important; font-size: 11px !important; }
+    .ability-options { display: grid; gap: 7px; margin-top: 12px; }
+    .ability-btn { min-height: 48px; border: 1px solid #78988a; border-radius: 12px 5px 12px 5px; background: #17393c; cursor: pointer; text-align: right; padding: 7px 12px; }
+    .ability-btn strong { color: #ffe29b; }
+    .ability-btn span { display: block; color: #c4d8c7; font-size: 10px; }
+    .hud-label { position: absolute; top: 12px; right: 12px; z-index: 1; padding: 5px 9px; border: 1px solid #aec7af88; background: #092329bb; color: #f1efda; font-size: 11px; }
+    .distance-bar { position: absolute; z-index: 1; right: 12px; bottom: 12px; width: min(220px, 36%); height: 8px; border: 1px solid #d9e1c277; background: #081c23cc; }
+    .distance-fill { width: 0; height: 100%; background: #e2d483; }
+    @media (max-width: 620px) {
+      body { padding: 10px; align-items: start; padding-top: max(12px, env(safe-area-inset-top)); }
+      .topline { align-items: flex-start; }
+      h1 { font-size: 17px; }
+      .subtitle { font-size: 10px; }
+      .brand-mark { width: 32px; height: 32px; }
+      .stat { min-width: 54px; padding: 4px 7px; }
+      .stat small { font-size: 9px; }
+      .stat strong { font-size: 15px; }
+      .stage { margin-top: 8px; }
+      .touch-controls { display: flex; }
+      .underbar { font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topline">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div><h1>I Will Win Alone</h1><p class="subtitle">سوف أفوز وحدي · سباق لا مكان فيه للتعاون</p></div>
+      </div>
+      <div class="stats" aria-live="polite">
+        <div class="stat"><small>المركز</small><strong id="score">١</strong></div>
+        <div class="stat"><small>المسافة</small><strong id="lives">٠٪</strong></div>
+      </div>
+    </header>
+    <section class="stage" aria-label="ساحة اللعب">
+      <canvas id="game" width="960" height="540" aria-label="لعبة منصات نُوّار الغابة"></canvas>
+      <div class="game-actions">
+        <button class="icon-btn" id="pause" type="button" aria-label="إيقاف مؤقت" title="إيقاف مؤقت">Ⅱ</button>
+        <button class="icon-btn mic-btn" id="mic" type="button" aria-label="اضغط مطولاً للتحدث" aria-pressed="false" title="اضغط مطولاً للتحدث">🎙</button>
+      </div>
+      <div class="mic-status" id="mic-status" aria-live="polite">الميكروفون مكتوم · اضغط مطولاً للتحدث</div>
+      <div class="hud-label" id="race-status" hidden>استعد للسباق</div>
+      <div class="distance-bar" id="distance-bar" hidden><div class="distance-fill" id="distance-fill"></div></div>
+      <div class="touch-controls" aria-label="أزرار الحركة">
+        <div class="touch-group"><button class="touch-btn" data-key="left" aria-label="يسار">◀</button><button class="touch-btn" data-key="right" aria-label="يمين">▶</button></div>
+        <button class="touch-btn jump" data-key="jump" aria-label="قفز">اقفز ↑</button>
+      </div>
+      <div class="shade" id="overlay">
+        <div class="dialog">
+          <div class="sigil" aria-hidden="true">✦</div>
+          <h2 id="dialog-title">نُوّار الغابة</h2>
+          <p id="dialog-copy">اجمع البلورات المضيئة واعبر الغابة حتى تصل إلى القمر.</p>
+          <button class="primary" id="start" type="button">ابدأ المغامرة</button>
+          <p class="hint" id="dialog-hint">تحرّك بالأسهم أو A و D، واقفز بمفتاح المسافة</p>
+        </div>
+      </div>
+    </section>
+    <footer class="underbar"><span><b>الهدف:</b> اعبر الغابة واجمع ما تستطيع</span><span>الأسهم / A D · قفز: Space</span></footer>
+  </main>
+  <script type="application/json" id="legacy-game">
+    (() => {
+      const canvas = document.querySelector('#game');
+      const ctx = canvas.getContext('2d');
+      const overlay = document.querySelector('#overlay');
+      const scoreEl = document.querySelector('#score');
+      const livesEl = document.querySelector('#lives');
+      const startButton = document.querySelector('#start');
+      const pauseButton = document.querySelector('#pause');
+      const soundButton = document.querySelector('#sound');
+      const W = 960, H = 540, worldWidth = 3100, floorY = 448;
+      const keys = { left: false, right: false, jump: false };
+      const pits = [[570, 690], [1090, 1220], [1700, 1840], [2390, 2530]];
+      const platforms = [
+        [250, 356, 350], [470, 572, 300], [720, 832, 354], [930, 1040, 285],
+        [1275, 1380, 350], [1485, 1590, 292], [1890, 2008, 344], [2120, 2240, 276],
+        [2580, 2700, 340], [2800, 2925, 285]
+      ];
+      let crystals, player, score, lives, cameraX, state = 'menu', lastTime = 0, audio = null, soundOn = true;
+      const number = value => new Intl.NumberFormat('ar').format(value);
+
+      function resetGame() {
+        crystals = [
+          [180, 400], [305, 308], [520, 258], [770, 310], [985, 243], [1145, 380],
+          [1328, 306], [1536, 250], [1770, 370], [1950, 297], [2180, 234], [2460, 370],
+          [2636, 294], [2860, 243], [3010, 392]
+        ].map(([x, y]) => ({ x, y, got: false, phase: Math.random() * 6 }));
+        player = { x: 70, y: floorY - 44, w: 25, h: 38, vx: 0, vy: 0, grounded: false, invincible: 0 };
+        score = 0; lives = 3; cameraX = 0; updateStats();
+      }
+
+      function updateStats() { scoreEl.textContent = number(score); livesEl.textContent = number(lives); }
+      function showDialog(title, copy, button, hint = '') {
+        document.querySelector('#dialog-title').textContent = title;
+        document.querySelector('#dialog-copy').textContent = copy;
+        startButton.textContent = button;
+        document.querySelector('#dialog-hint').textContent = hint;
+        overlay.hidden = false;
+      }
+      function startGame() { resetGame(); state = 'playing'; overlay.hidden = true; pauseButton.textContent = 'Ⅱ'; }
+
+      function tone(frequency, duration = .12, type = 'sine') {
+        if (!soundOn) return;
+        try {
+          audio ||= new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator = audio.createOscillator(), gain = audio.createGain();
+          oscillator.type = type; oscillator.frequency.value = frequency;
+          gain.gain.setValueAtTime(.055, audio.currentTime);
+          gain.gain.exponentialRampToValueAtTime(.001, audio.currentTime + duration);
+          oscillator.connect(gain); gain.connect(audio.destination);
+          oscillator.start(); oscillator.stop(audio.currentTime + duration);
+        } catch (_) { /* Audio is optional. */ }
+      }
+
+      function respawn() {
+        lives--;
+        updateStats();
+        if (lives <= 0) {
+          state = 'over';
+          showDialog('انتهت الرحلة', `جمعت ${number(score)} من البلورات. للغابة دروب أخرى!`, 'حاول مجدداً');
+          return;
+        }
+        player.x = Math.max(45, Math.floor(player.x / 600) * 600 + 35);
+        player.y = 280; player.vx = 0; player.vy = 0; player.invincible = 1.8;
+      }
+
+      function update(dt) {
+        if (state !== 'playing') return;
+        const previousY = player.y;
+        const speed = keys.left === keys.right ? 0 : keys.left ? -250 : 250;
+        player.vx += (speed - player.vx) * Math.min(1, dt * 12);
+        if (keys.jump && player.grounded) { player.vy = -540; player.grounded = false; tone(390, .09); }
+        player.vy = Math.min(760, player.vy + 1380 * dt);
+        player.x = Math.max(0, Math.min(worldWidth - player.w, player.x + player.vx * dt));
+        player.y += player.vy * dt;
+        player.grounded = false;
+
+        const center = player.x + player.w / 2;
+        const inPit = pits.some(([left, right]) => center > left && center < right);
+        if (!inPit && previousY + player.h <= floorY && player.y + player.h >= floorY) {
+          player.y = floorY - player.h; player.vy = 0; player.grounded = true;
+        }
+        for (const [left, right, top] of platforms) {
+          if (player.vy >= 0 && previousY + player.h <= top && player.y + player.h >= top && player.x + player.w > left && player.x < right) {
+            player.y = top - player.h; player.vy = 0; player.grounded = true;
+          }
+        }
+        if (player.y > H + 100) respawn();
+        if (player.invincible > 0) player.invincible -= dt;
+
+        for (const crystal of crystals) {
+          if (!crystal.got && Math.abs(player.x + player.w / 2 - crystal.x) < 25 && Math.abs(player.y + player.h / 2 - crystal.y) < 28) {
+            crystal.got = true; score++; updateStats(); tone(760 + (score % 4) * 110, .18, 'triangle');
+          }
+        }
+        if (player.x > worldWidth - 65) {
+          state = 'won';
+          showDialog('وصلت إلى ضوء القمر', `جمعت ${number(score)} من ${number(crystals.length)} بلورة. أحسنت يا مستكشف!`, 'العب من جديد');
+          tone(660, .35, 'triangle');
+        }
+        cameraX += ((player.x - W * .34) - cameraX) * Math.min(1, dt * 5);
+        cameraX = Math.max(0, Math.min(worldWidth - W, cameraX));
+      }
+
+      function rect(x, y, w, h, color) { ctx.fillStyle = color; ctx.fillRect(Math.round(x), Math.round(y), Math.ceil(w), Math.ceil(h)); }
+      function drawBackground(time) {
+        const sky = ctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, '#102d47'); sky.addColorStop(.55, '#22616b'); sky.addColorStop(1, '#89b88d');
+        rect(0, 0, W, H, '#183e50'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+        const moonX = 755 - cameraX * .06, moonY = 104;
+        const glow = ctx.createRadialGradient(moonX, moonY, 8, moonX, moonY, 150);
+        glow.addColorStop(0, '#fff3cba8'); glow.addColorStop(1, '#fff0c900');
+        ctx.fillStyle = glow; ctx.fillRect(moonX - 160, 0, 320, 300);
+        for (let i = 0; i < 5; i++) {
+          ctx.fillStyle = `rgba(235, 242, 188, ${.025 + i * .004})`;
+          ctx.beginPath(); ctx.moveTo(moonX - 12, moonY + 8); ctx.lineTo(i * 210 - 150, 480); ctx.lineTo(i * 210 - 78, 480); ctx.closePath(); ctx.fill();
+        }
+        rect(moonX - 22, moonY - 22, 44, 44, '#fff1c8');
+        for (let i = 0; i < 50; i++) {
+          const x = ((i * 173 + 31 - cameraX * .16) % W + W) % W;
+          const y = (i * 79 + 27) % 285;
+          rect(x, y, i % 7 === 0 ? 3 : 2, i % 7 === 0 ? 3 : 2, i % 3 === 0 ? '#c7e1b1' : '#b8d8e0');
+        }
+        drawHillLayer(time, .12, 335, '#234e5a', 72);
+        drawHillLayer(time, .23, 388, '#163e49', 52);
+        for (let i = -2; i < 14; i++) {
+          const x = i * 110 - (cameraX * .32 % 110);
+          const sway = Math.sin(time * .001 + i) * 3;
+          rect(x + 40, 337 + sway, 6, 83, '#163b3d');
+          rect(x + 15, 316 + sway, 57, 25, '#184647');
+          rect(x + 24, 298 + sway, 38, 22, '#20534d');
+          rect(x + 29, 310 + sway, 11, 5, '#76a36c');
+        }
+      }
+      function drawHillLayer(time, factor, base, color, amplitude) {
+        ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(0, H);
+        for (let x = 0; x <= W + 20; x += 20) {
+          const wx = x + cameraX * factor;
+          ctx.lineTo(x, base + Math.sin(wx * .007 + time * .00018) * amplitude + Math.sin(wx * .018) * 11);
+        }
+        ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+      }
+
+      function drawWorld(time) {
+        ctx.save(); ctx.translate(-cameraX, 0);
+        for (let x = 0; x < worldWidth; x += 38) {
+          const inPit = pits.some(([left, right]) => x + 30 > left && x < right);
+          if (inPit) continue;
+          rect(x, floorY, 39, H - floorY, '#603f32');
+          rect(x, floorY, 39, 10, '#72b673'); rect(x, floorY + 10, 39, 5, '#345e48');
+          for (let dot = 0; dot < 4; dot++) rect(x + (dot * 17 + 5) % 35, floorY + 24 + ((x + dot * 13) % 65), 3, 2, dot % 2 ? '#77503b' : '#48342e');
+          if (x % 76 === 0) { rect(x + 13, floorY - 11, 3, 11, '#a2cc79'); rect(x + 20, floorY - 8, 2, 8, '#c7d985'); }
+        }
+        for (const [left, right] of pits) {
+          rect(left, floorY, right - left, H - floorY, '#102b38');
+          rect(left, floorY, right - left, 6, '#416e68');
+          rect(left + 8, floorY + 28, right - left - 16, 3, '#26505a');
+        }
+        for (const [left, right, top] of platforms) {
+          rect(left, top, right - left, 12, '#bd8452'); rect(left, top + 12, right - left, 8, '#815439');
+          for (let x = left; x < right; x += 34) { rect(x, top + 12, 2, 8, '#593e36'); rect(x + 15, top + 2, 2, 9, '#8a6041'); }
+          rect(left, top + 10, right - left, 2, '#e1aa66');
+        }
+        for (const crystal of crystals) {
+          if (crystal.got) continue;
+          const bob = Math.sin(time * .004 + crystal.phase) * 4;
+          const x = crystal.x, y = crystal.y + bob;
+          ctx.fillStyle = '#ffe281'; ctx.beginPath(); ctx.moveTo(x, y - 12); ctx.lineTo(x + 10, y - 3); ctx.lineTo(x + 7, y + 11); ctx.lineTo(x - 7, y + 11); ctx.lineTo(x - 10, y - 3); ctx.closePath(); ctx.fill();
+          rect(x - 2, y - 7, 4, 13, '#fff6c0'); rect(x - 5, y + 12, 10, 3, '#a67636');
+        }
+        drawGoal(); drawPlayer(); ctx.restore();
+      }
+      function drawGoal() {
+        const x = worldWidth - 80;
+        rect(x, floorY - 115, 6, 115, '#d8d3a0'); rect(x + 6, floorY - 115, 42, 22, '#e9d786');
+        rect(x + 6, floorY - 93, 29, 5, '#b5a65e');
+        for (let i = 0; i < 3; i++) rect(x + 15 + i * 12, floorY - 19, 4, 9, '#e2edb0');
+      }
+      function drawPlayer() {
+        if (player.invincible > 0 && Math.floor(player.invincible * 12) % 2) return;
+        const x = Math.round(player.x), y = Math.round(player.y);
+        rect(x + 5, y, 17, 4, '#302a36'); rect(x + 2, y + 5, 22, 15, '#e9b989');
+        rect(x + 5, y + 2, 16, 4, '#322f3a'); rect(x + 4, y + 7, 3, 3, '#302b36');
+        rect(x + 17, y + 8, 3, 4, '#172d3a'); rect(x + 7, y + 15, 16, 5, '#355a70');
+        rect(x + 8, y + 20, 14, 12, '#324b5b'); rect(x + 4, y + 22, 5, 10, '#dfaf45');
+        rect(x + 8, y + 32, 6, 6, '#2b3038'); rect(x + 18, y + 32, 6, 6, '#2b3038');
+        rect(x + 1, y + 24, 5, 4, '#e8b98a');
+      }
+      function draw(time) {
+        drawBackground(time);
+        if (player) drawWorld(time);
+        if (state === 'playing') {
+          const remaining = crystals.filter(item => !item.got).length;
+          ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.font = 'bold 14px Changa, sans-serif';
+          ctx.fillStyle = '#f5f0d5'; ctx.fillText(`متبقي ${number(remaining)} بلورة`, W - 18, H - 18);
+        }
+      }
+
+      function frame(time) {
+        const dt = Math.min(.032, (time - (lastTime || time)) / 1000); lastTime = time;
+        update(dt); draw(time); requestAnimationFrame(frame);
+      }
+      function setKey(key, down) { if (key in keys) keys[key] = down; }
+      window.addEventListener('keydown', event => {
+        const key = event.key.toLowerCase();
+        if (['arrowleft', 'arrowright', 'arrowup', ' ', 'a', 'd', 'w'].includes(key)) event.preventDefault();
+        if (key === 'arrowleft' || key === 'a') setKey('left', true);
+        if (key === 'arrowright' || key === 'd') setKey('right', true);
+        if (key === 'arrowup' || key === 'w' || key === ' ') setKey('jump', true);
+        if (key === 'escape' && state === 'playing') togglePause();
+      });
+      window.addEventListener('keyup', event => {
+        const key = event.key.toLowerCase();
+        if (key === 'arrowleft' || key === 'a') setKey('left', false);
+        if (key === 'arrowright' || key === 'd') setKey('right', false);
+        if (key === 'arrowup' || key === 'w' || key === ' ') setKey('jump', false);
+      });
+      window.addEventListener('blur', () => { keys.left = false; keys.right = false; keys.jump = false; });
+      document.querySelectorAll('.touch-btn').forEach(button => {
+        const key = button.dataset.key;
+        button.addEventListener('pointerdown', event => { event.preventDefault(); button.setPointerCapture(event.pointerId); setKey(key, true); });
+        for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(type, () => setKey(key, false));
+      });
+      function togglePause() {
+        if (state === 'playing') {
+          state = 'paused'; pauseButton.textContent = '▶';
+          showDialog('استراحة بين الأشجار', 'خذ نفساً، فالقمر ينتظرك.', 'تابع المغامرة', 'اضغط Escape للمتابعة أو استخدم الزر');
+        } else if (state === 'paused') { state = 'playing'; overlay.hidden = true; pauseButton.textContent = 'Ⅱ'; }
+      }
+      startButton.addEventListener('click', () => {
+        if (state === 'paused') { state = 'playing'; overlay.hidden = true; pauseButton.textContent = 'Ⅱ'; }
+        else startGame();
+      });
+      pauseButton.addEventListener('click', togglePause);
+      soundButton.addEventListener('click', () => {
+        soundOn = !soundOn; soundButton.textContent = soundOn ? '♫' : '♪';
+        soundButton.setAttribute('aria-label', soundOn ? 'كتم الصوت' : 'تشغيل الصوت');
+        soundButton.title = soundOn ? 'كتم الصوت' : 'تشغيل الصوت';
+      });
+      resetGame(); requestAnimationFrame(frame);
+    })();
+  </script>
+  <script src="race.js"></script>
+</body>
+</html>
